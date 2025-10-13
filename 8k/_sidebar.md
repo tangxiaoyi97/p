@@ -3,12 +3,12 @@
 
 * **{ WELTBILD }**
   * [ WELTBILDSTREIT ]
-    * [01 / WELTBILDSTREIT](8K/WELTBILD/WB01)
-    * [02 / PSYCHOKOSMOLOGIE](8K/WELTBILD/WB02)
-    * [03 / PTOLEMÄUS](8K/WELTBILD/WB03)
-    * [04 / KOPERNIKUS](8K/WELTBILD/WB04)
-    * [05 / GALILEO](8K/WELTBILD/WB05)
-    * [06 / argumente](8K/WELTBILD/WB06)
+    * [01 / WELTBILDSTREIT](8k/weltbild/wb01)
+    * [02 / PSYCHOKOSMOLOGIE](8k/weltbild/wb02)
+    * [03 / PTOLEMÄUS](8k/weltbild/wb03)
+    * [04 / KOPERNIKUS](8k/weltbild/wb04)
+    * [05 / GALILEO](8k/weltbild/wb05)
+    * [06 / argumente](8k/weltbild/wb06)
     * [-- / --](tbc.md)
   * [ PLACEHOLDER ]
-    * [00 / PLACEHOLDER](8K/path)
+    * [00 / PLACEHOLDER](8k/path)
