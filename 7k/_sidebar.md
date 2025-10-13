@@ -25,4 +25,4 @@
     * [10 / ELEKTRISCHE WIDERSTAND](/7k/e/e10)
     * [11 / ELEKTRONENVOLT](/7k/e/e11)
     * [12 / OHM'SCHES GESETZ](/7k/e/e12)
-    * [-- / (to be continued)](tbc.md)
+    * [-- / (to be continued)](./tbc.md)
