@@ -9,6 +9,6 @@
     * [04 / KOPERNIKUS](8k/WELTBILD/WB04)
     * [05 / GALILEO](8k/WELTBILD/WB05)
     * [06 / argumente](8k/WELTBILD/WB06)
-    * [-- / --](/tbc)
+    * [-- / --](tbc.md)
   * [ PLACEHOLDER ]
     * [00 / PLACEHOLDER](8k/path)
