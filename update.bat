@@ -22,7 +22,7 @@ for /f "tokens=1-5 delims=/: " %%d in ("%date% %time%") do (
 REM 提交更改
 echo.
 echo 📝 提交更改...
-git commit -m "auto update on %datestr%"
+git commit -m "updated %datestr%"
 
 REM 推送到远程仓库
 echo.
