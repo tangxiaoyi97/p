@@ -1,5 +1,5 @@
 * **{ GENERAL }**
-* * * [**BEFORE YOU START**](/readme)
+* * * [**BEFORE YOU START**](./README.md)
 
 * **{ WELTBILD }**
   * [ WELTBILDSTREIT ]
