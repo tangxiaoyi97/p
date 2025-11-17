@@ -49,6 +49,6 @@ goto END
 
 :END
 echo.
-echo 🌐 visit: https://tangxiaoyi97.github.io/documents/
+echo 🌐 visit: https://tangxiaoyi97.github.io/p/
 pause
 exit
