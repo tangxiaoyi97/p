@@ -40,3 +40,8 @@
     * [-- / --](/general/tbc.md)
   * [ PLACEHOLDER ]
     * [00 / PLACEHOLDER](8k/path)
+
+* **{ PR / ISSUE }**
+* * [[ DISCORD ]](https://discord.gg/YTJNvhXg)
+* * [[ GITHUB ]](https://github.com/tangxiaoyi97)
+* * [[ COFFEE ]](https://buymeacoffee.com/lingmao)
