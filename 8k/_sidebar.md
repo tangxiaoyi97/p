@@ -10,7 +10,11 @@
     * [05 / GALILEO](8k/weltbild/wb05)
     * [06 / BRUNO](8k/weltbild/wb06)
     * [07 / KEPLER](8k/weltbild/wb07)
-    * [08 / NEWTON](8k/weltbild/wb08)
+    * [08 / NEWTON & EINSTEIN](8k/weltbild/wb08)
+    * [-- / --](.tbc.md)
+* **{ KLASSISCHE GRAVITATIONSTHEORIE }**
+  * [ KL. GRAVITATIONST. ]
+    * [01 / Newton](8k/klassischeGravitationstheorie/gt01.md)
     * [-- / --](.tbc.md)
   * [ PLACEHOLDER ]
     * [00 / PLACEHOLDER](8k/path)
