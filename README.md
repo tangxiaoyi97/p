@@ -25,7 +25,7 @@ Plugins by: [Docsify Progress](https://github.com/HerbertHe/docsify-progress), [
 
 
 **Contributors**:  
-@**白青** - Technical ~~and mental~~ support  
+@**白青Енисей** - Technical ~~and mental~~ support  
 @**8b Gesamt** - alle die mich abschreiben lassen  
 @**Sebastian H.** - aktives Zuschauen, Lärm und Ablenkungen  
 @**Harvey**  
