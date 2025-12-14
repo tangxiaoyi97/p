@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gravitation Laboratory</title>
+    <style>
+        /* --- [1. 全局变量与基础设定] --- */
+        :root {
+            --primary: #007aff;
+            --accent: #34c759;
+            --text-main: #1d1d1f;
+            --text-sub: #86868b;
+            --bg-panel: rgba(255, 255, 255, 0.88);
+            --grid-line: #eef1f5;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #fbfbfd;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* --- [2. 可折叠控制面板] --- */
+        #control-panel {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 280px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+        }
+
+        @media (max-width: 600px) {
+            #control-panel {
+                width: calc(100% - 30px);
+                top: 10px;
+                left: 15px;
+            }
+        }
+
+        .panel-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.3s;
+        }
+
+        #control-panel.expanded .panel-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .title-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toggle-icon {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-sub);
+            transition: transform 0.4s ease;
+        }
+
+        #control-panel.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .panel-content {
+            max-height: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        #control-panel.expanded .panel-content {
+            max-height: 500px;
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .content-inner {
+            padding: 20px;
+        }
+
+        /* --- [3. 控件样式细节] --- */
+        .control-group {
+            margin-bottom: 18px;
+        }
+
+        .label-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .val-display {
+            font-family: 'Menlo', monospace;
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            display: block;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            border: 0.5px solid rgba(0, 0, 0, 0.1);
+            margin-top: -7px;
+            cursor: pointer;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: #e1e1e6;
+            border-radius: 2px;
+        }
+
+        .result-box {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .result-val {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            font-family: 'Menlo', monospace;
+            letter-spacing: -0.5px;
+        }
+
+        .result-unit {
+            font-size: 11px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: var(--text-sub);
+            text-align: center;
+            margin-top: 12px;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="control-panel" class="expanded">
+        <div class="panel-header" onclick="togglePanel()">
+            <span class="title-text">Laboratory Setup</span>
+            <svg class="toggle-icon" viewBox="0 0 24 24">
+                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
+            </svg>
+        </div>
+
+        <div class="panel-content">
+            <div class="content-inner">
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Mass 1 (Green)</span>
+                        <span id="disp-m1" class="val-display">--</span>
+                    </div>
+                    <input type="range" id="input-m1" min="10" max="200" step="5">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>Mass 2 (Blue)</span>
+                        <span id="disp-m2" class="val-display">--</span>
+                    </div>
+                    <input type="range" id="input-m2" min="10" max="200" step="5">
+                </div>
+
+                <div class="control-group">
+                    <div class="label-row">
+                        <span>G Constant</span>
+                        <span id="disp-g" class="val-display">--</span>
+                    </div>
+                    <input type="range" id="input-g" min="100" max="3000" step="100">
+                </div>
+
+                <div class="result-box">
+                    <div class="result-unit">Force Magnitude</div>
+                    <div id="disp-force" class="result-val">0.00 N</div>
+                    <div class="result-unit" style="margin-top:6px; font-size:10px;">Distance: <span
+                            id="disp-r">0</span> m</div>
+                </div>
+
+                <div class="hint">Tap header to collapse menu</div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="simCanvas"></canvas>
+
+    <script>
+        // --- 1. 功能：折叠面板逻辑 ---
+        function togglePanel() {
+            document.getElementById('control-panel').classList.toggle('expanded');
+        }
+
+        // --- 2. 功能：参数初始化 ---
+        const params = new URLSearchParams(window.location.search);
+
+        const initM1 = parseFloat(params.get('m1')) || 60;
+        const initM2 = parseFloat(params.get('m2')) || 100;
+        const initG = parseFloat(params.get('g')) || 1500;
+
+        const ui = {
+            m1: document.getElementById('input-m1'),
+            m2: document.getElementById('input-m2'),
+            g: document.getElementById('input-g'),
+            dispM1: document.getElementById('disp-m1'),
+            dispM2: document.getElementById('disp-m2'),
+            dispG: document.getElementById('disp-g'),
+            dispF: document.getElementById('disp-force'),
+            dispR: document.getElementById('disp-r'),
+        };
+
+        ui.m1.value = initM1; ui.m2.value = initM2; ui.g.value = initG;
+
+        const physics = { m1: initM1, m2: initM2, G: initG };
+        const bodies = [
+            { x: 0, y: 0, m: physics.m1, color: '#34c759' },
+            { x: 0, y: 0, m: physics.m2, color: '#007aff' }
+        ];
+
+        function updateParams() {
+            physics.m1 = parseFloat(ui.m1.value);
+            physics.m2 = parseFloat(ui.m2.value);
+            physics.G = parseFloat(ui.g.value);
+
+            ui.dispM1.innerText = physics.m1 + ' kg';
+            ui.dispM2.innerText = physics.m2 + ' kg';
+            ui.dispG.innerText = physics.G;
+            bodies[0].m = physics.m1; bodies[1].m = physics.m2;
+        }
+
+        ui.m1.addEventListener('input', updateParams);
+        ui.m2.addEventListener('input', updateParams);
+        ui.g.addEventListener('input', updateParams);
+        updateParams();
+
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let mouse = { x: 0, y: 0, dragging: null };
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            if (bodies[0].x === 0) {
+                const yOffset = window.innerWidth < 600 ? 0.6 : 0.5;
+                bodies[0].x = width * 0.3; bodies[0].y = height * yOffset;
+                bodies[1].x = width * 0.7; bodies[1].y = height * yOffset;
+            }
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function drawGrid() {
+            const step = 50;
+            ctx.beginPath();
+            ctx.strokeStyle = '#eef1f5'; ctx.lineWidth = 1;
+            for (let x = 0; x < width; x += step) { ctx.moveTo(x, 0); ctx.lineTo(x, height); }
+            for (let y = 0; y < height; y += step) { ctx.moveTo(0, y); ctx.lineTo(width, y); }
+            ctx.stroke();
+        }
+
+        function drawVector(x, y, angle, len, color, label) {
+            if (len < 5) return;
+            // 对数缩放：解决箭头长度限制问题
+            const visualLen = Math.log(len + 1) * 35;
+            const endX = x + visualLen * Math.cos(angle);
+            const endY = y + visualLen * Math.sin(angle);
+
+            ctx.save();
+            ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 3;
+            ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(endX, endY); ctx.stroke();
+
+            const headIdx = 10;
+            ctx.beginPath();
+            ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - headIdx * Math.cos(angle - Math.PI / 6), endY - headIdx * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(endX - headIdx * Math.cos(angle + Math.PI / 6), endY - headIdx * Math.sin(angle + Math.PI / 6));
+            ctx.fill();
+
+            // 矢量文字
+            ctx.font = "bold 12px Arial";
+            ctx.fillText(label, endX + 15 * Math.cos(angle), endY + 15 * Math.sin(angle));
+            ctx.restore();
+        }
+
+        // --- 主循环 ---
+        function loop() {
+            ctx.clearRect(0, 0, width, height);
+            drawGrid();
+
+            const b1 = bodies[0]; const b2 = bodies[1];
+            const dx = b2.x - b1.x; const dy = b2.y - b1.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx);
+
+            const rEff = Math.max(dist, 50);
+            const force = (physics.G * b1.m * b2.m) / (rEff * rEff);
+
+            ui.dispF.innerText = force.toFixed(2) + ' N';
+            ui.dispR.innerText = (dist / 100).toFixed(2);
+
+            // 1. 连接虚线
+            ctx.beginPath(); ctx.strokeStyle = '#c1c1c7'; ctx.setLineDash([5, 5]);
+            ctx.moveTo(b1.x, b1.y); ctx.lineTo(b2.x, b2.y); ctx.stroke(); ctx.setLineDash([]);
+
+            // 2. [新增] 绘制 r 标签 (位于连线中点)
+            const midX = (b1.x + b2.x) / 2;
+            const midY = (b1.y + b2.y) / 2;
+
+            ctx.save();
+            ctx.textAlign = "center";
+
+            // 绘制白色描边 (Halo)，防止虚线穿过文字影响阅读
+            ctx.strokeStyle = "#fbfbfd";
+            ctx.lineWidth = 6;
+            ctx.lineJoin = "round";
+
+            // 绘制 "r" 符号
+            ctx.font = "italic bold 16px 'Times New Roman', serif"; // 数学斜体
+            ctx.textBaseline = "bottom";
+            ctx.strokeText("r", midX, midY - 4); // 先描边
+            ctx.fillStyle = "#505b68";
+            ctx.fillText("r", midX, midY - 4);   // 后填充文字
+
+            // 绘制 距离数值 (可选，辅助阅读)
+            ctx.font = "10px Menlo, monospace";
+            ctx.textBaseline = "top";
+            ctx.strokeText((dist / 100).toFixed(2) + "m", midX, midY + 4);
+            ctx.fillStyle = "#86868b";
+            ctx.fillText((dist / 100).toFixed(2) + "m", midX, midY + 4);
+
+            ctx.restore();
+
+
+            // 3. 绘制矢量
+            drawVector(b1.x, b1.y, angle, force, b1.color, "F");
+            drawVector(b2.x, b2.y, angle + Math.PI, force, b2.color, "F'");
+
+            // 4. 绘制质点
+            bodies.forEach(b => {
+                const radius = Math.sqrt(b.m) * 2.5;
+                ctx.beginPath(); ctx.arc(b.x, b.y, radius, 0, Math.PI * 2);
+
+                ctx.fillStyle = b.color;
+                ctx.shadowBlur = b === mouse.dragging ? 20 : 0;
+                ctx.shadowColor = b.color;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+
+                ctx.fillStyle = "#fff"; ctx.font = "11px Arial";
+                ctx.textAlign = "center"; ctx.textBaseline = "middle";
+                ctx.fillText(Math.round(b.m), b.x, b.y);
+            });
+
+            requestAnimationFrame(loop);
+        }
+
+        // --- 交互处理 ---
+        function handleStart(x, y) {
+            const r = canvas.getBoundingClientRect();
+            const cx = x - r.left; const cy = y - r.top;
+            bodies.forEach(b => {
+                const rad = Math.sqrt(b.m) * 2.5 + 20;
+                if (Math.hypot(cx - b.x, cy - b.y) < rad) mouse.dragging = b;
+            });
+        }
+
+        function handleMove(x, y) {
+            if (!mouse.dragging) return;
+            const r = canvas.getBoundingClientRect();
+            mouse.dragging.x = x - r.left;
+            mouse.dragging.y = y - r.top;
+        }
+
+        canvas.addEventListener('mousedown', e => handleStart(e.clientX, e.clientY));
+        window.addEventListener('mousemove', e => handleMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', () => mouse.dragging = null);
+
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            handleStart(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        window.addEventListener('touchmove', e => {
+            e.preventDefault();
+            handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+
+        window.addEventListener('touchend', () => mouse.dragging = null);
+
+        loop();
+    </script>
+</body>
+
+</html>
